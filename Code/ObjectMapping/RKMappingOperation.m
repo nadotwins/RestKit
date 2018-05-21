@@ -122,6 +122,7 @@ static NSString *const RKRootKey = @"@root";
 static NSString *const RKRootKeyPathPrefix = @"@root.";
 static NSString *const RKSelfKey = @"self";
 static NSString *const RKSelfKeyPathPrefix = @"self.";
+static NSString *const RKLiteralKeyPrefix = @"@:";
 
 /**
  Inserts up to two objects a the start of the metadata list.  metadata1 will be at the front if both are provided.
@@ -312,6 +313,9 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         return self.parentObject;
     } else if ([key isEqualToString:RKRootKey]) {
         return self.rootObject;
+    } else if ([key hasPrefix:RKLiteralKeyPrefix]) {
+        NSString *objectKey = [key substringFromIndex:[RKLiteralKeyPrefix length]];
+        return [_object objectForKey:objectKey];
     } else {
         return [_object valueForKey:key];
     }
@@ -340,6 +344,9 @@ static NSArray *RKInsertInMetadataList(NSArray *list, id metadata1, id metadata2
         } else if ([keyPath hasPrefix:RKRootKeyPathPrefix]) {
             NSString *rootKeyPath = [keyPath substringFromIndex:[RKRootKeyPathPrefix length]];
             return [self.rootObject valueForKeyPath:rootKeyPath];
+        } else if ([keyPath hasPrefix:RKLiteralKeyPrefix]) {
+                NSString *objectKey = [keyPath substringFromIndex:[RKLiteralKeyPrefix length]];
+                return [_object objectForKey:objectKey];
         } else {
             return [_object valueForKeyPath:keyPath];
         }
